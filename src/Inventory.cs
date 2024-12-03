@@ -21,18 +21,25 @@ public class Inventory
 			return true;
 	}
 
-	public bool Show()
+	//public int ItemCount;
+
+	public int countItems()
+	{
+		return items.Count;
+	}
+
+	public void Show()
 	{
 		foreach (KeyValuePair<string, Item> entry in items)
 		{
 			Item item = items[entry.Key]; 
 			Console.WriteLine(entry.Key + ", item weight is: " + item.Weight + "kg");
 		}
-		return true;
 	}
 
 	public Item Get(string itemName)
 	{
+		Console.WriteLine(itemName);
 		if (items.ContainsKey(itemName))
 		{
 			Item item = items[itemName];

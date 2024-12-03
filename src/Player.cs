@@ -6,6 +6,8 @@ class Player
 	public Inventory backpack;
 	private Enemy enemy = new Enemy();
 
+	public string status;
+
 	public bool canMove = true;
 
 	public Room CurrentRoom { get; set; }
@@ -17,9 +19,14 @@ class Player
 	{
 		return _health;
 	}
+	
 
 	public int Damage(int dealt)
 	{
+		if (dealt > _health)
+		{
+			dealt = _health;
+		}
 		_health = _health - dealt;
 		Console.WriteLine("You have taken damage: " + dealt + " health points lost!");
 		return _health;
@@ -38,41 +45,56 @@ class Player
 		return _health;
 	}
 
-	private bool Alive;
-
 	public bool isAlive()
 	{
 		if (_health > 0)
 		{
-			Alive = true;
 			Console.WriteLine("Wow! Still alive! Good job!");
-			return Alive;
+			return true;
 		}
 		else
 		{
-			Alive = false;
-			Console.WriteLine("I think you might be dead...");
-			return Alive;
+			Console.WriteLine("I Think you might be dead...");
+			return false;
 		}
 	}
 
-	public string Use(string itemName)
+	public void StatusEffect(string status)
 	{
-		if (itemName == "Potion")
+		this.status = status;
+		if (status == "Poisoned")
+		{
+			Console.WriteLine("You have been poisoned");
+		} else if (status == "Disgusted")
+		{
+			Console.WriteLine("You are disgusted");
+		} else if (status == "Sick")
+		{
+			Console.WriteLine("You are sick, you have puked your organs out");
+			Damage(100); 
+		}
+	}
+
+	public void Use(string itemName)
+	{
+		if (itemName == "potion")
 		{
 			backpack.Get(itemName);
-			Heal(20);
+			Heal(50);
 			Console.WriteLine("Your health now");
 			Console.WriteLine(currentHealth());
 		}
-		return "yay";
+		else
+		{
+			Console.WriteLine("You can't use this item");
+		} ;
 	}
 
 	public Player()
 	{
 		_health = 100;
 		CurrentRoom = null;
-		backpack = new Inventory(100);
+		backpack = new Inventory(60);
 	}
 
 	public bool TakeFromChest(string itemName)
@@ -81,6 +103,13 @@ class Player
 		if (currentitem == null)
 		{
 			return false;
+		}
+		if (currentitem.Description == "The golden hat")
+		{
+			Console.WriteLine("You picked up the golden hat, and put it on your head. However, you underestimated it's weight. You were crushed! Glorious victory!");
+			_health = 0;
+			isAlive();
+			return true;
 		}
 		if (currentitem.Weight <= backpack.FreeWeight())
 		{
@@ -102,15 +131,20 @@ class Player
 
 	public bool DropToChest(string itemName)
 	{
-		CurrentRoom.Chest.Put(itemName, backpack.Get(itemName));
+		Item currentItem = backpack.Get(itemName);
+		if (currentItem == null)
+		{
+			return false;
+		}
+		CurrentRoom.Chest.Put(itemName, currentItem);
 		Console.WriteLine("items currently in room chest:");
-		Console.WriteLine(CurrentRoom.Chest.Show());
+		CurrentRoom.Chest.Show();
 		return true;
 	}
 
 	public void Attack(string item = null)
 	{
-		int attackPower = backpack.Power(item);
+		int attackPower = backpack.Power(itemName: item);
 		if (attackPower == 0)
 		{
 			Console.WriteLine("The enemy has not taken any damage");

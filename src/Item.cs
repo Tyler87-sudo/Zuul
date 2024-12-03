@@ -7,7 +7,7 @@ public class Item
 	
 	public int Power { get; }
 
-	public Item(int weight, string description, int power)
+	public Item(int weight, string description, int power = 0)
 	{
 		Weight = weight;
 		Description = description;

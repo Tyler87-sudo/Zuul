@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text;
 using Zuul;
 
 class Room
@@ -7,6 +8,7 @@ class Room
 	private Inventory chest;
 	public Enemy enemy { get; }
 	private string description;
+	public bool Key;
 	private Dictionary<string, Room> exits; // stores exits of this room.
 
 	// Create a room described "description". Initially, it has no exits.
@@ -17,14 +19,15 @@ class Room
 		get { return chest; }
 	}
 	
-	public Room(string desc, Enemy enemy = null)
+	public Room(string desc, bool Key = false, Enemy enemy = null)
 	{
+		this.Key = Key;
 		chest = new Inventory(9999999);
 		this.enemy = enemy;
 		description = desc;
 		exits = new Dictionary<string, Room>();
 	}
-
+	
 	// Define an exit for this room.
 	public void AddExit(string direction, Room neighbor)
 	{
